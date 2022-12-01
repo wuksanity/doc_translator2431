@@ -13,7 +13,7 @@ def get_user_docs():
     return documents_array
 
 
-def translating_function(thread_name, file_name):
+def translating_function(file_name):   # just testing if this works so far, can add docs later
     translator = Translator()
     with open(file_name, 'r', encoding='utf8') as file:
         for line in file:
@@ -23,7 +23,7 @@ def translating_function(thread_name, file_name):
 
 def begin_threading(docs):
     for doc in docs:
-        thread = threading.Thread(target=translating_function, args=doc)
+        thread = threading.Thread(target=translating_function, args=[doc])
         thread.start()
 
 
