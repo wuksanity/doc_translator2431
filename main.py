@@ -13,17 +13,22 @@ def get_user_docs():
     return documents_array
 
 
-def translating_function(file_name):   # just testing if this works so far, can add docs later
+def translating_function(file_name, lock):   # just testing if this works so far, can add docs later
     translator = Translator()
+    lock.acquire()
     with open(file_name, 'r', encoding='utf8') as file:
         for line in file:
             print(translator.translate(text=line, dest="en").text)
+    
+    print(file_name + " is done being translated!")
+    lock.release()
     #translatedToEnglish.append()
 
 
 def begin_threading(docs):
+    lock = threading.Lock()
     for doc in docs:
-        thread = threading.Thread(target=translating_function, args=[doc])
+        thread = threading.Thread(target=translating_function, args=(*[doc], lock))
         thread.start()
 
 
