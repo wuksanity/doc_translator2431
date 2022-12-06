@@ -1,8 +1,6 @@
 from googletrans import Translator   # need to pip install googletrans==3.1.0a0^C
 import threading
 
-# List that holds the resulting documents translated to English
-global translatedToEnglish
 documents = []
 
 
@@ -13,16 +11,22 @@ def get_user_docs():
     return documents_array
 
 
-def translating_function(file_name, lock):   # just testing if this works so far, can add docs later
+def get_out_file(file_name):
+    return file_name[0: file_name.index(".")] + ".output.txt"
+
+
+def translating_function(file_name, lock):
     translator = Translator()
+    output_file = get_out_file(file_name)
     lock.acquire()
     with open(file_name, 'r', encoding='utf8') as file:
-        for line in file:
-            print(translator.translate(text=line, dest="en").text)
-    
-    print(file_name + " is done being translated!")
+        with open(output_file, 'w') as out:
+            for line in file:
+                out.write(translator.translate(text=line, dest="en").text + "\n")
+
+    print()
+    print(file_name + f" has finished translating, view {output_file} to see!")
     lock.release()
-    #translatedToEnglish.append()
 
 
 def begin_threading(docs):
@@ -36,11 +40,4 @@ documents = get_user_docs()
 print(documents)
 begin_threading(documents)
 
-# Pseudocode:
-    # Read each line
-    # Translate each line
-    # Write each line to a new text document? or string? idk
-    # Loop again
-    # Lock (I think the function is acquire())
-    # translatedToEnglish.append(the final text document)
-    # Unlock (I think it's release())
+# vietExample.txt, mandarinExample.txt
