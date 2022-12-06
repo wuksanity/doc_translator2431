@@ -55,9 +55,7 @@ def begin_threading(docs):
     lock = threading.Lock()
     for doc_pair in docs:
         thread = threading.Thread(target=translating_function, args=(*[doc_pair], lock))
-        lock.acquire()
         thread.start()
-        lock.release()
 
 documents = get_user_docs()
 documents = check_user_files(documents)
