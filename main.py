@@ -1,4 +1,4 @@
-from googletrans import Translator   # need to pip install googletrans==3.1.0a0^C
+from googletrans import Translator   # need to pip install googletrans==3.1.0a0
 import threading
 
 documents = []
@@ -52,9 +52,8 @@ def translating_function(files):
 # Parameters: The array of tuples that contain documents that will be translated and their respective output file.
 # Return value: No return value, just ensures that the threads begin execution.
 def begin_threading(docs):
-    lock = threading.Lock()
     for doc_pair in docs:
-        thread = threading.Thread(target=translating_function, args=(*[doc_pair], lock))
+        thread = threading.Thread(target=translating_function, args=([doc_pair]))
         thread.start()
 
 documents = get_user_docs()
