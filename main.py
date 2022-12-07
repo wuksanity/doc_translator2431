@@ -47,7 +47,7 @@ def get_out_file(file_name):
 # Parameters: A tuple where the first index is the file that needs to be translated, and the second index is an empty
 #             out file.
 # Return value: None, outputs translation to a new file
-def translating_function(file_name):
+def translating_function(file_name, lock):
     translator = Translator()
     out_file = get_out_file(file_name)
     with open(file_name, 'r', encoding='utf8') as file:
@@ -55,17 +55,18 @@ def translating_function(file_name):
             for line in file:
                 out.write(translator.translate(text=line, dest="en").text + "\n")
     print(file_name + f" has finished translating, view {out_file} to see!")
-    # lock here
+    lock.acquire()
     translated_docs.append(out_file)
-    # unlock here
+    lock.release()
 
 
 # Starts the different threads that each translates different documents; incorporates data-level parallelism.
 # Parameters: The array of tuples that contain documents that will be translated and their respective output file.
 # Return value: No return value, just ensures that the threads begin execution.
 def begin_threading(docs):
+    lock = threading.Lock()
     for doc in docs:
-        thread = threading.Thread(target=translating_function, args=([doc]))
+        thread = threading.Thread(target=translating_function, args=(*[doc], lock))
         thread.start()
         thread.join()
 
