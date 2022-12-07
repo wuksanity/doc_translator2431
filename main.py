@@ -16,7 +16,7 @@ def get_user_docs():
     return documents_array
 
 
-# Asks the user to verify their input documents, if they're incorrect then allows the user to recorrect them.
+# Asks the user to verify their input documents, if they're incorrect then allows the user to correct them.
 # Parameters: An array of documents that needs to be verified before being translated.
 # Return value: Returns an array of documents that is in the correct form to be translated.
 def check_user_files(docs):
@@ -44,29 +44,42 @@ def get_out_file(file_name):
 
 
 # Translates each line within a document into English.
-# Parameters: A tuple where the first index is the file that needs to be translated, and the second index is an empty out file.
-# Return value: A tuple where the first index is the file that needs to be translated, and the second index is the final translated out file.
-def translating_function(files):
+# Parameters: A tuple where the first index is the file that needs to be translated, and the second index is an empty
+#             out file.
+# Return value: None, outputs translation to a new file
+def translating_function(file_name):
     translator = Translator()
-    with open(files[0], 'r', encoding='utf8') as file:
-        with open(files[1], 'w') as out:
+    out_file = get_out_file(file_name)
+    with open(file_name, 'r', encoding='utf8') as file:
+        with open(out_file, 'w') as out:
             for line in file:
                 out.write(translator.translate(text=line, dest="en").text + "\n")
-    print(files[0] + f" has finished translating, view {files[1]} to see!")
+    print(file_name + f" has finished translating, view {out_file} to see!")
+    # lock here
+    translated_docs.append(out_file)
+    # unlock here
 
 
 # Starts the different threads that each translates different documents; incorporates data-level parallelism.
 # Parameters: The array of tuples that contain documents that will be translated and their respective output file.
 # Return value: No return value, just ensures that the threads begin execution.
 def begin_threading(docs):
-    for doc_pair in docs:
-        thread = threading.Thread(target=translating_function, args=([doc_pair]))
+    for doc in docs:
+        thread = threading.Thread(target=translating_function, args=([doc]))
         thread.start()
+        thread.join()
+
+
+def show_out_files(output_files):
+    print()
+    print("Here are your translated files: ")
+    for idx, doc in enumerate(output_files):
+        print(f"{idx + 1}. {doc}")
 
 
 documents = get_user_docs()
 documents = check_user_files(documents)
-documents = list(zip(documents, map(get_out_file, documents)))  # creating tuple: (in_file, out_file)
 begin_threading(documents)
+show_out_files(translated_docs)
 
 # vietExample.txt, mandarinExample.txt
