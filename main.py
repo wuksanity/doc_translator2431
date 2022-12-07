@@ -82,4 +82,4 @@ documents = check_user_files(documents)
 begin_threading(documents)
 show_out_files(translated_docs)
 
-# vietExample.txt, mandarinExample.txt
+#  EXAMPLE FILES TO TEST: vietExample.txt, mandarinExample.txt
